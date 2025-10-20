@@ -1149,6 +1149,39 @@ class AsciiDocTranslator(nodes.NodeVisitor):
     def depart_container(self,node):
         self.body.append('++++')
 
+    def visit_plantuml(self, node):
+        """
+        Verarbeitet einen plantuml-Node und fügt eine AsciiDoc-Bildreferenz ein.
+        """
+        try:
+            # Pfad zur generierten PNG-Datei
+            image_path = node.get('filename', node.get('uri', ''))
+            if image_path:
+                self.body.append(f'\nimage::{image_path}[]\n')
+            else:
+                self.body.append('\n// [WARNING] No image in plantuml node\n')
+        except Exception as e:
+            self.body.append(f'\n// [ERROR] Processing PlantUML: {e}\n')
+        raise nodes.SkipNode  # verhindert weitere Verarbeitung
+
+    def depart_plantuml(self, node):
+        pass  # nicht benötigt, da SkipNode verwendet wird
+
+
+    def visit_diagrams(self, node):
+        try:
+            image_path = node.get('filename', node.get('uri', ''))
+            if image_path:
+                self.body.append(f'\nimage::{image_path}[]\n')
+            else:
+                self.body.append('\n// [WARNING] No image in diagrams node\n')
+        except Exception as e:
+            self.body.append(f'\n// [Error] Processing Diagrams: {e}\n')
+        raise nodes.SkipNode
+
+    def depart_diagrams(self, node):
+        pass
+
 if __name__ == "__main__":
     """ To test the writer """
     from docutils.core import publish_string
