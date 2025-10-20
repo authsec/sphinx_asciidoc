@@ -719,6 +719,8 @@ class AsciiDocTranslator(nodes.NodeVisitor):
     def visit_tgroup(self,node): ## Whole inside of the table
         cols = node['cols']
         specs = self.tabColSpecs
+        if cols == 0:
+            cols = 1
         col = int(round((100 / cols)))
         clist = [col,]*cols
         if specs == []:
